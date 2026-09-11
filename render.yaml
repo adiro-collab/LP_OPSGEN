@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: LandingPageOpsGen
+    env: static
+    buildCommand: "echo 'no build required'"
+    staticPublishPath: .
+    pullRequestPreviewsEnabled: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /opsgen-landing-v2.html
