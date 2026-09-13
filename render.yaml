@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: LandingPageOpsGen
+    name: landingpageopsgen
     env: static
     buildCommand: "echo 'no build required'"
     staticPublishPath: .
