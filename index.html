@@ -363,6 +363,8 @@
   .consent.invalid{color:#d64545}
   form .btn-primary{width:100%}
   .form-note{font-size:.78rem;color:var(--muted);margin-top:13px;text-align:center}
+  .form-success{display:none;margin-top:14px;padding:12px 15px;border-radius:var(--r-sm);background:rgba(22,217,168,.14);color:#0b7a5e;border:1px solid rgba(22,217,168,.4);font-size:.9rem;font-weight:700;text-align:center}
+  .form-success.show{display:block}
   .form-status{border-radius:var(--r-sm);padding:13px 15px;font-size:.93rem;margin-bottom:16px;display:none}
   .form-status.show{display:block}
   .form-status.success{background:rgba(22,217,168,.14);color:#0b7a5e;border:1px solid rgba(22,217,168,.4)}
@@ -917,6 +919,7 @@
         <svg class="arrow-i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
       </button>
       <p class="form-note">צוות SoluGen AI יחזור אליכם בהקדם. הפרטים משמשים ליצירת קשר בלבד.</p>
+      <p class="form-success" id="formSuccessNote" role="status" aria-live="polite">✓ תודה, ההודעה נשלחה. ניצור קשר ממש בקרוב.</p>
     </form>
   </div>
 </section>
@@ -944,11 +947,14 @@
   "use strict";
 
   /* CONFIG — connect before production.
-     Set the SoluGen lead endpoint here (or define window.OPSGEN_FORM_ENDPOINT
-     before this script). Empty => demo mode: validates + shows success, sends nothing. */
-  var FORM_ENDPOINT = window.OPSGEN_FORM_ENDPOINT || "";
-  var SUCCESS_MSG = "תודה! הפרטים התקבלו. צוות SoluGen AI יחזור אליכם בהקדם.";
-  var ERROR_MSG   = "אירעה תקלה בשליחה. אפשר לנסות שוב, או לפנות אלינו דרך אתר SoluGen AI.";
+     FORM_ACCESS_KEY: Web3Forms access key (web3forms.com) — routes submissions to an email
+     inbox with zero backend. Paste the key you received by email below, or set
+     window.OPSGEN_WEB3FORMS_KEY before this script runs. Leave both empty => demo mode
+     (validates + shows the success note, sends nothing).
+     Alternatively set window.OPSGEN_FORM_ENDPOINT to POST to your own endpoint instead. */
+  var FORM_ACCESS_KEY = window.OPSGEN_WEB3FORMS_KEY || "";
+  var FORM_ENDPOINT = window.OPSGEN_FORM_ENDPOINT || (FORM_ACCESS_KEY ? "https://api.web3forms.com/submit" : "");
+  var ERROR_MSG = "אירעה תקלה בשליחה. אפשר לנסות שוב, או לפנות אלינו דרך אתר SoluGen AI.";
 
   window.dataLayer = window.dataLayer || [];
   function track(ev, params) {
@@ -1089,6 +1095,7 @@
   /* Lead form */
   var form = document.getElementById("leadForm");
   var statusBox = document.getElementById("formStatus");
+  var successNote = document.getElementById("formSuccessNote");
   var submitBtn = document.getElementById("submitBtn");
   var started = false;
 
@@ -1134,15 +1141,20 @@
       new FormData(form).forEach(function (v, k) { data[k] = v; });
       data.consent = document.getElementById("consent").checked;
       data.submitted_at = new Date().toISOString();
+      if (FORM_ACCESS_KEY) {
+        data.access_key = FORM_ACCESS_KEY;
+        data.subject = "ליד חדש מדף הנחיתה של OpsGen™ AI";
+      }
 
       submitBtn.classList.add("loading");
       submitBtn.disabled = true;
       if (statusBox) statusBox.className = "form-status";
+      if (successNote) successNote.classList.remove("show");
 
       function ok() {
         submitBtn.classList.remove("loading"); submitBtn.disabled = false;
         form.reset(); captureCampaign();
-        showStatus("success", SUCCESS_MSG);
+        if (successNote) successNote.classList.add("show");
         track("form_submit_success", { focus: data.focus || "" });
       }
       function err() {
@@ -1156,7 +1168,7 @@
           .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r; })
           .then(ok).catch(err);
       } else {
-        if (window.console) console.warn("[OpsGen] Demo mode: form not submitted. Set window.OPSGEN_FORM_ENDPOINT to enable real submission.");
+        if (window.console) console.warn("[OpsGen] Demo mode: form not submitted. Set FORM_ACCESS_KEY (Web3Forms) or window.OPSGEN_FORM_ENDPOINT to enable real submission.");
         setTimeout(ok, 900);
       }
     });
