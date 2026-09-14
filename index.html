@@ -187,8 +187,8 @@
     .appwin-nav a{background:#f3f6fa;padding:5px 8px;font-size:.64rem}
     .appwin-nav a.sub{padding-inline-start:8px}
     .kg.k6,.kg.k3{grid-template-columns:repeat(3,1fr)}
-    .dt{overflow-x:auto}
-    .dt-h,.dt-r{min-width:480px}
+    .dt-wide .dt-h,.dt-wide .dt-r{grid-template-columns:1.6fr auto auto!important}
+    .dt-wide .dt-h>div:nth-child(2),.dt-wide .dt-r>div:nth-child(2){display:none}
   }
 
   /* cards grid */
@@ -581,7 +581,7 @@
               <span class="aw-chip"><i></i>5 חריגים פעילים</span>
               <span class="aw-btn">+ הוסף חוק</span>
             </div>
-            <div class="dt">
+            <div class="dt dt-wide">
               <div class="dt-h" style="grid-template-columns:1.7fr .8fr auto auto"><div>חוק / חריגה</div><div>ישות</div><div>סטטוס</div><div>חריג</div></div>
               <div class="dt-r" style="grid-template-columns:1.7fr .8fr auto auto"><div><span class="nm">שינוי חשבון בנק לספק</span><span class="sub2">חשבון הבנק של הספק השתנה במערכת</span></div><div class="mut">ספק</div><div><span class="st ok"><i></i>פעיל</span></div><div><span class="pct">90%</span></div></div>
               <div class="dt-r" style="grid-template-columns:1.7fr .8fr auto auto"><div><span class="nm">חריגת מחיר ברכש</span><span class="sub2">מחיר הפריט גבוה ב-15% מהמחיר האחרון</span></div><div class="mut">הזמנת רכש</div><div><span class="st ok"><i></i>פעיל</span></div><div><span class="pct">50%</span></div></div>
